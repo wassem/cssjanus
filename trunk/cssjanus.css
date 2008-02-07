@@ -1,0 +1,61 @@
+/**
+ * Copyright 2007 Google Inc.
+ * All Rights Reserved.
+ *
+ * CSSLTRTL
+ * @author elsigh@google.com (Lindsey Simon)
+ */
+
+/* g-tpl-50-50 g-unit */
+.g-tpl-50-50 .g-unit {
+  display: inline;
+  margin: 0;
+  width: 49%;
+  float: right;
+}
+/* g-tpl-50-50 g-first */
+.g-tpl-50-50 .g-first {
+  display: inline;
+  margin: 0;
+  width: 49%;
+  float: left;
+}
+label {
+  display: block;
+  font-weight: bold;
+}
+form em {
+  display: block;
+  font-size: 85%;
+}
+form div {
+  margin: 1em 0 0 0;
+}
+form .g-submit input {
+  margin: 1em 0;
+  font-weight: bold;
+  font-size: 2em;
+}
+fieldset {
+  margin: 1.6em 0;
+  border: 1px dotted #ccc;
+  padding: 0 1.5em 1.5em;
+}
+fieldset label {
+  display: inline;
+  margin: 0 1em 0 0;
+}
+legend {
+  padding: 3px 8px;
+  font-weight: bold;
+  font-style: italic;
+  background: #eee;
+  color: #000;
+}
+pre {
+  margin-top: 0;
+}
+
+#cssj-msg {
+  color: red;
+}
