@@ -48,7 +48,7 @@
       <div class="g-section g-tpl-50-50">
         <div class="g-unit g-first">
           <form action="/" method="post">
-            <div>
+            <div id="cssj-csstext">
               <label for="csstext">Paste or Type CSS:</label>
               <textarea id="csstext" name="csstext" rows="5" cols="60" >{% if csstext %}{{ csstext }}{% endif %}</textarea>
             </div>
@@ -78,8 +78,9 @@
               </div>
             </fieldset>
             
-            <div class="g-submit">
-              <input type="submit" value="CSSLTRTL-ify me!">
+            <div class="cssj-submit">
+              <input id="cssj-submit" type="submit" value="CSSLTRTL-ify me!">
+              <input type="reset" value="Reset">
             </div>
           </form>
         </div>
@@ -96,5 +97,21 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript">
+      var exampleText = '.classname-should-not-change-ltr-left-rtl-right {\r' +
+                        '  padding: 1px 2px 3px 4px;\r' + 
+                        '  margin-right: 3em;\r' +
+                        '  background-position: 5% 80%;\r' +
+                        '  background: url(testme-bright-sleft-left-ltr.gif);' + 
+                        ' /* try me with flags */\r' +
+                        '}';
+      var el = document.createElement('span');
+      el.id = 'cssj-example';
+      el.innerHTML = 'Try this example!';
+      el.onclick = function() {
+        document.getElementById('csstext').value = exampleText;
+      };
+      document.getElementById('cssj-csstext').appendChild(el);
+    </script>
   </body>
 </html>

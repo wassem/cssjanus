@@ -31,8 +31,11 @@ form em {
 form div {
   margin: 1em 0 0 0;
 }
-form .g-submit input {
-  margin: 1em 0;
+.cssj-submit {
+  margin: 1em 0 0 0;
+}
+#cssj-submit {
+  margin-right: 1em;
   font-weight: bold;
   font-size: 2em;
 }
@@ -58,4 +61,11 @@ pre {
 
 #cssj-msg {
   color: red;
+}
+
+#cssj-example {
+  float: right;
+  text-decoration: underline;
+  color: #00c;
+  cursor: pointer;
 }
