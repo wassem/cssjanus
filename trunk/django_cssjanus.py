@@ -104,9 +104,11 @@ def do(request):
   else:
     result = "Pass in the URI of a file to process with ?file=URI"
     
-  #self.response.headers['Content-Type'] = 'text/css'
-  #self.response.out.write(result)
-  return HttpResponse(result)
+  # Make sure to add on text/css header.
+  response = HttpResponse()
+  response['Content-Type'] = 'text/css'
+  response.write(result)
+  return response
 
 
 def ParseFlags(request):
