@@ -31,15 +31,16 @@ Check out the latest development version anonymously with:
 Usage:
   ./cssjanus.py < file.css > file-rtl.css
 Flags:
-  --swap_left_right_in_url: Fix "left"/"right" string within urls.
-  Ex: ./cssjanus --swap_left_right_in_url < file.css > file_rtl.css
-  --swap_ltr_rtl_in_url Fix "ltr"/"rtl" string within urls.
-  Ex: ./cssjanus --swap_ltr_rtl_in_url < file.css > file_rtl.css
+  --swap_left_right_in_url: Fixes "left"/"right" string within urls.
+  Ex: ./cssjanus.py --swap_left_right_in_url < file.css > file_rtl.css
+  --swap_ltr_rtl_in_url: Fixes "ltr"/"rtl" string within urls.
+  Ex: ./cssjanus.py --swap_ltr_rtl_in_url < file.css > file_rtl.css
   
 
 If you'd like to make use of the bundled django webapp version of cssjanus,
 you'll need to edit django_settings and set the TEMPLATE_DIRS variable
-to the absolute path of the cssjanus checkout. Next, edit django_run.sh and
+to the absolute path of your cssjanus checkout. Next, open django_urls.py and 
+edit the document_root (last line in that file). Lastly, edit django_run.sh and
 change the PYTHONPATH. You should then be able to fire up the local dev 
 server simply by running "./django_run.sh runserver" from the command line.
 
