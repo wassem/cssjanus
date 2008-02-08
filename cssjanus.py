@@ -4,13 +4,13 @@
 
 """Converts a LeftToRight Cascading Style Sheet into a RightToLeft one.
 
-   This is a utility script that replaces "left" oriented things in a CSS file
+   This is a utility script for replacing "left" oriented things in a CSS file
    like float, padding, margin with "right" oriented values.
    It also does the opposite.
    The goal is to be able to conditionally serve one large, cat'd, compiled CSS
    file appropriate for LeftToRight oriented languages and RightToLeft ones.
-   This utility will really only help (hopefully) your structural layout in
-   terms of its RTL compatibility. It does not help with some of the more
+   This utility will hopefully help your structural layout done in CSS in
+   terms of its RTL compatibility. It will not help with some of the more
    complicated bidirectional text iseues.
 """
 
@@ -471,15 +471,19 @@ def usage():
   """Prints out usage information."""
   
   print 'Usage:'
-  print '  ./cssltrtl.py < file.css > file-rtl.css'
+  print '  ./cssjanus.py < file.css > file-rtl.css'
   print 'Flags:'
-  print '  --swap_left_right_in_url: Fix "left"/"right" string within urls.'
-  print '  Ex: ./cssltrtl --swap_left_right_in_url < file.css > file_rtl.css'
-  print '  --swap_ltr_rtl_in_url Fix "ltr"/"rtl" string within urls.'
-  print '  Ex: ./cssltrtl --swap_ltr_rtl_in_url < file.css > file_rtl.css'
+  print '  --swap_left_right_in_url: Fixes "left"/"right" string within urls.'
+  print '  Ex: ./cssjanus.py --swap_left_right_in_url < file.css > file_rtl.css'
+  print '  --swap_ltr_rtl_in_url: Fixes "ltr"/"rtl" string within urls.'
+  print '  Ex: ./cssjanus --swap_ltr_rtl_in_url < file.css > file_rtl.css'
 
 def setflags(opts):
-  """Parse the passed in command line arguments and set the FLAGS global."""
+  """Parse the passed in command line arguments and set the FLAGS global.
+  
+  Args:
+    opts: getopt iterable intercepted from argv.
+  """
   
   global FLAGS
   

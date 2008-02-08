@@ -79,7 +79,7 @@
             </fieldset>
             
             <div class="cssj-submit">
-              <input id="cssj-submit" type="submit" value="CSSLTRTL-ify me!">
+              <input id="cssj-submit" type="submit" value="Run CSS Janus!">
               <input type="reset" value="Reset">
             </div>
           </form>
