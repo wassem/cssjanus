@@ -6,12 +6,30 @@
       @import "http://www.google.com/css/goog.css";
       @import "http://www.google.com/css/gooey.css";
       @import "files/cssjanus.css";
-      
       a img {
         border: none;
       }
       .g-doc-1024 {
         padding-top: 2em; 
+      }
+      #cssj-altuse {
+        margin-top: 2.5em;
+        border-top: 1px dashed #666;
+        padding-top: 15px;
+      }
+      fieldset {
+        border-color: #999; 
+      }
+      textarea {
+        border-right: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+      }
+      pre {
+        background: #eee none repeat scroll 0%;
+        border: 1px solid #999999;
+        color: #666;
+        padding: 1em;
+        width: 30em;
       }
     </style>
   </head>
@@ -27,15 +45,7 @@
         <h2>CSS Janus Left-To-Right-To-Left-ifyer</h2>
         
         <p>
-          Basically, this webapp calls cssjanus.py which converts left-to-right-ish properties and values in a CSS file to right-to-left-ish counterparts and vice-versa. See the <a href="http://code.google.com/p/cssjanus/source/browse/trunk/README">README</a> for more details.
-        </p>
-        
-        <p>
-          You can also call use this webapp directly in your markup with your publicly accessible CSS files like so for easy testing:
-          <pre>
-&lt;style type="text/css"&gt;
- @import "/do?file=www.google.com/css/goog.css";
-&lt;/style&gt;</pre>
+          This webapp calls cssjanus.py to convert left-to-right-ish properties and values in a CSS file to right-to-left-ish counterparts and vice-versa. See the <a href="http://code.google.com/p/cssjanus/">Project Page on Google Code</a> and the <a href="http://code.google.com/p/cssjanus/source/browse/trunk/README">README</a> for more details.
         </p>
       </div>
       
@@ -50,7 +60,7 @@
           <form action="/" method="post">
             <div id="cssj-csstext">
               <label for="csstext">Paste or Type CSS:</label>
-              <textarea id="csstext" name="csstext" rows="5" cols="60" >{% if csstext %}{{ csstext }}{% endif %}</textarea>
+              <textarea id="csstext" name="csstext" rows="7" cols="60" >{% if csstext %}{{ csstext }}{% endif %}</textarea>
             </div>
             
             <div>
@@ -86,17 +96,32 @@
         </div>
         
         <div class="g-unit">
-          {% if result %}
           <form id="results">
             <div>
               <label for="cssresults">Result CSS:</label>
+              {% if result %}
               <textarea id="cssresults" rows="25" cols="60">{{ result }}</textarea>
+              {% else %}
+              <em>Results will appear here...</em>
+              {% endif %}
             </div>
           </form>
-          {% endif %}
         </div>
       </div>
+      
+      
+      
+      <p id="cssj-altuse">
+        You could also embed this webapp directly in your markup with your publicly accessible CSS files like so:
+        <pre>
+&lt;style type="text/css"&gt;
+  @import "/do?file=www.google.com/css/goog.css";
+&lt;/style&gt;</pre>
+      </p>
     </div>
+    
+    
+        
     <script type="text/javascript">
       var exampleText = '.classname-should-not-change-ltr-left-rtl-right {\r' +
                         '  padding: 1px 2px 3px 4px;\r' + 
@@ -107,7 +132,7 @@
                         '}';
       var el = document.createElement('span');
       el.id = 'cssj-example';
-      el.innerHTML = 'Try this example!';
+      el.innerHTML = 'Try this example CSS!';
       el.onclick = function() {
         document.getElementById('csstext').value = exampleText;
       };
