@@ -6,31 +6,6 @@
       @import "http://www.google.com/css/goog.css";
       @import "http://www.google.com/css/gooey.css";
       @import "files/cssjanus.css";
-      a img {
-        border: none;
-      }
-      .g-doc-1024 {
-        padding-top: 2em; 
-      }
-      #cssj-altuse {
-        margin-top: 2.5em;
-        border-top: 1px dashed #666;
-        padding-top: 15px;
-      }
-      fieldset {
-        border-color: #999; 
-      }
-      textarea {
-        border-right: 1px solid #eee;
-        border-bottom: 1px solid #eee;
-      }
-      pre {
-        background: #eee none repeat scroll 0%;
-        border: 1px solid #999999;
-        color: #666;
-        padding: 1em;
-        width: 30em;
-      }
     </style>
   </head>
   <body>

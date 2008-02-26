@@ -31,6 +31,26 @@ form em {
 form div {
   margin: 1em 0 0 0;
 }
+
+a img {
+  border: none;
+}
+.g-doc-1024 {
+  padding-top: 2em; 
+}
+#cssj-altuse {
+  margin-top: 2.5em;
+  border-top: 1px dashed #666;
+  padding-top: 15px;
+}
+pre {
+  background: #eee none repeat scroll 0%;
+  border: 1px solid #999999;
+  color: #666;
+  padding: 1em;
+  width: 33em;
+  margin-top: 0;
+}
 .cssj-submit {
   margin: 1em 0 0 0;
 }
@@ -41,7 +61,7 @@ form div {
 }
 fieldset {
   margin: 1.6em 0;
-  border: 1px dotted #ccc;
+  border: 1px dotted #999;
   padding: 0 1.5em 1.5em;
 }
 fieldset label {
@@ -55,14 +75,14 @@ legend {
   background: #eee;
   color: #000;
 }
-pre {
-  margin-top: 0;
+textarea {
+  border-right: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  width: 32em;
 }
-
 #cssj-msg {
   color: red;
 }
-
 #cssj-example {
   float: right;
   text-decoration: underline;
