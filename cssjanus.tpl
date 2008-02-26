@@ -60,7 +60,7 @@
           <form action="/" method="post">
             <div id="cssj-csstext">
               <label for="csstext">Paste or Type CSS:</label>
-              <textarea id="csstext" name="csstext" rows="7" cols="60" >{% if csstext %}{{ csstext }}{% endif %}</textarea>
+              <textarea id="csstext" name="csstext" rows="8" cols="60" >{% if csstext %}{{ csstext }}{% endif %}</textarea>
             </div>
             
             <div>
@@ -129,7 +129,10 @@
                         '  background-position: 5% 80%;\r' +
                         '  background: url(testme-bright-sleft-left-ltr.gif);' + 
                         ' /* try me with flags */\r' +
-                        '}';
+                        '}\r' +
+                        '/* @noflip */\r'+
+                        '.foo { float:left }\r' +
+                        '.bar { float:left }';
       var el = document.createElement('span');
       el.id = 'cssj-example';
       el.innerHTML = 'Try this example CSS!';
