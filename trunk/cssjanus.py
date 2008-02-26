@@ -167,7 +167,7 @@ RTL_IN_URL_RE = re.compile('%s(%s)%s' % (LOOKBEHIND_NOT_LETTER,
 COMMENT_RE = re.compile('(%s)' % csslex.COMMENT, re.I)
 
 NOFLIP = r'/\*%s\@noflip%s\*/' % (csslex.WHITESPACE, csslex. WHITESPACE)
-NOFLIP_RE = re.compile('(%s[^\}]*\})', re.I)
+NOFLIP_RE = re.compile('(%s[^\}]*\})' % NOFLIP, re.I)
 
 
 class Tokenizer:
