@@ -450,5 +450,19 @@ class CSSJANUSUnitTest(unittest.TestCase):
                 '.b2{direction:ltr;float:left}']
     self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
   
+  def testNoFlip(self):
+    """Tests the /* @noflip */ annotation on classnames."""
+    testcase = ['/* @noflip */ div { float: left; }']
+    shouldbe = ['/* @noflip */ div { float: left; }']
+    self.assertEqual(shouldbe, cssltrtl.ChangeLeftToRightToLeft(testcase))
+    
+    testcase = ['/* @noflip */ div, .notme { float: left; }']
+    shouldbe = ['/* @noflip */ div, .notme { float: left; }']
+    self.assertEqual(shouldbe, cssltrtl.ChangeLeftToRightToLeft(testcase))
+    
+    testcase = ['/* @noflip */ div { float: left; } div { float: left; }']
+    shouldbe = ['/* @noflip */ div { float: left; } div { float: right; }']
+    self.assertEqual(shouldbe, cssltrtl.ChangeLeftToRightToLeft(testcase))
+  
 if __name__ == '__main__':
   unittest.main()

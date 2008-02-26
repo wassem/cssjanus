@@ -166,6 +166,9 @@ RTL_IN_URL_RE = re.compile('%s(%s)%s' % (LOOKBEHIND_NOT_LETTER,
 
 COMMENT_RE = re.compile('(%s)' % csslex.COMMENT, re.I)
 
+NOFLIP = r'/\*%s\@noflip%s\*/' % (csslex.WHITESPACE, csslex. WHITESPACE)
+NOFLIP_RE = re.compile('(%s[^\}]*\})', re.I)
+
 
 class Tokenizer:
   """Replaces any CSS comments with string tokens and vice versa."""
@@ -441,6 +444,10 @@ def ChangeLeftToRightToLeft(lines,
   logging.debug('LINES COUNT: %s' % len(lines))
   line = TOKEN_LINES.join(lines)
   
+  # Tokenize any class rules with the /* noflip */ annotation.
+  noflip_tokenizer = Tokenizer(NOFLIP_RE, 'NOFLIP')
+  line = noflip_tokenizer.Tokenize(line)
+  
   # Tokenize the comments so we can preserve them through the changes.
   comment_tokenizer = Tokenizer(COMMENT_RE, 'C')
   line = comment_tokenizer.Tokenize(line)
@@ -458,6 +465,9 @@ def ChangeLeftToRightToLeft(lines,
   line = FixCursorProperties(line)
   line = FixFourPartNotation(line)
   line = FixBackgroundPosition(line)
+  
+  # DeTokenize the noflips.
+  line = noflip_tokenizer.DeTokenize(line)
   
   # DeTokenize the comments.
   line = comment_tokenizer.DeTokenize(line)
