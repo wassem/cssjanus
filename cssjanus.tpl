@@ -45,7 +45,10 @@
         <h2>CSS Janus Left-To-Right-To-Left-ifyer</h2>
         
         <p>
-          This webapp calls cssjanus.py to convert left-to-right-ish properties and values in a CSS file to right-to-left-ish counterparts and vice-versa. See the <a href="http://code.google.com/p/cssjanus/">Project Page on Google Code</a> and the <a href="http://code.google.com/p/cssjanus/source/browse/trunk/README">README</a> for more details.
+          This webapp calls cssjanus.py to convert left-to-right-ish properties and values in a CSS file to right-to-left-ish counterparts and vice-versa.
+        </p>
+        <p>
+          See the <a href="http://code.google.com/p/cssjanus/">Project Page on Google Code</a> and the <a href="http://code.google.com/p/cssjanus/source/browse/trunk/README">README</a> for more details. <strong>Author:</strong> <a href="mailto:elsigh@google.com">elsigh@google.com</a> (Lindsey Simon)
         </p>
       </div>
       
