@@ -166,8 +166,16 @@ RTL_IN_URL_RE = re.compile('%s(%s)%s' % (LOOKBEHIND_NOT_LETTER,
 
 COMMENT_RE = re.compile('(%s)' % csslex.COMMENT, re.I)
 
-NOFLIP = r'/\*%s\@noflip%s\*/' % (csslex.WHITESPACE, csslex. WHITESPACE)
-NOFLIP_RE = re.compile('(%s[^\}]*\})' % NOFLIP, re.I)
+NOFLIP_TOKEN = r'\@noflip'
+# The NOFLIP_TOKEN inside of a comment. For now, this requires that comments
+# be in the input, which means users of a css compiler would have to run
+# this script first if they want this functionality.
+NOFLIP_ANNOTATION = r'/\*%s%s%s\*/' % (csslex.WHITESPACE,
+                                       NOFLIP_TOKEN,
+                                       csslex. WHITESPACE)
+# After a NOFLIP_ANNOTATION, we want to grab anything up until the next } which
+# means the entire following class block. This will prevent changes to it.
+NOFLIP_RE = re.compile('(%s[^\}]*\})' % NOFLIP_ANNOTATION, re.I)
 
 
 class Tokenizer:
