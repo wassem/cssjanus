@@ -105,12 +105,13 @@
                         '  padding: 1px 2px 3px 4px;\r' + 
                         '  margin-right: 3em;\r' +
                         '  background-position: 5% 80%;\r' +
-                        '  background: url(testme-bright-sleft-left-ltr.gif);' + 
+                        '  background: url(testme-bright-cleft-left-ltr.gif);' +
                         ' /* try me with flags */\r' +
+                        '  cursor: ne-resize;\r' +
                         '}\r' +
                         '/* @noflip */\r'+
-                        '.foo { float:left }\r' +
-                        '.bar { float:left }';
+                        '.dontchangeme { float:left }\r' +
+                        '.changeme { float:left }';
       var el = document.createElement('span');
       el.id = 'cssj-example';
       el.innerHTML = 'Try this example CSS!';
