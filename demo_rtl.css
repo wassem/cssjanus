@@ -1,0 +1,50 @@
+body {
+  direction: rtl;
+  font: 1em/1.4 arial, sans-serif;
+  color: #fff;
+  width: 80%;
+}
+
+.cssj-section {
+  border: 1px solid blue; 
+}
+.cssj-section:after { 
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.cssj-unit .g-section:after {
+  clear: none;
+}
+.cssj-unit .g-section {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Forces "hasLayout" for IE. This fixes the usual gamut of peekaboo bugs. */
+.g-section,
+.cssj-unit {
+  zoom: 1;
+}
+.cssj-25-75 .cssj-unit {
+  display: inline;
+  margin: 0;
+  width: 74.999%;
+  float: left;
+  background: green;
+  height: 700px;
+}
+
+.cssj-25-75 .cssj-first {
+  display: inline;
+  margin: 0;
+  width: 24.999%;
+  float: right;
+  background: darkblue;
+}
+
+p {
+  padding: 1em 1em 0 0;
+}
