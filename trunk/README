@@ -1,4 +1,4 @@
-=CSS Janus=
+=CSSJanus=
 
 _Flips CSS from LTR to an RTL orienation and vice-versa_
 
@@ -6,13 +6,17 @@ Author: `Lindsey Simon <elsigh@google.com>`
 
 ==Introduction==
 
-CSS Janus is designed to help in the conversion of a website's layout from 
-left-to-right(LTR) to right-to-left(RTL) by providing a CSS parser which will
-change property names and values accordingly. This script alone is of course
-not enough to take a website from a LTR language to a RTL one all the way.
-There are many bidirectional text formatting issues that this script cannot 
-fix, but it is a start. This script was born out of the need to convert some
-layouts to RTL when tables are not being used for layout.
+CSSJanus is CSS parser utility designed to aid the conversion of a website's
+layout from left-to-right(LTR) to right-to-left(RTL). The script was born out of
+a need to convert CSS for RTL languages when tables are not being used for layout (since tables will automatically reorder TD's in RTL). 
+CSSJanus will change most of the obvious CSS property names and their values as
+well as some not-so-obvious ones (cursor, background-position %, etc...). 
+The script is designed to offer flexibility to account for cases when you do 
+not want to change certain rules which exist to account for bidirectional text
+display bugs, as well as situations where you may or may not want to flip annotations inside of the background url string.
+
+CSSJanus itself is not always enough to make a website that works in a LTR
+language context work in a RTL language all the way, but it is a start. 
 
 ==Getting the code==
 
@@ -34,9 +38,8 @@ Flags:
   --swap_left_right_in_url: Fixes "left"/"right" string within urls.
   Ex: ./cssjanus.py --swap_left_right_in_url < file.css > file_rtl.css
   --swap_ltr_rtl_in_url: Fixes "ltr"/"rtl" string within urls.
-  Ex: ./cssjanus.py --swap_ltr_rtl_in_url < file.css > file_rtl.css
+  Ex: ./cssjanus.py --swap_ltr_rtl_in_url < file.css > file_rtl.css  
   
-
 If you'd like to make use of the bundled django webapp version of cssjanus,
 you'll need to edit django_settings and set the TEMPLATE_DIRS variable
 to the absolute path of your cssjanus checkout. Next, open django_urls.py and 
