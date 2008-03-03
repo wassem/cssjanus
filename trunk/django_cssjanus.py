@@ -1,6 +1,6 @@
 # Copyright 2008 Google Inc. All Rights Reserved.
 
-"""Django controllers for CSS Janus."""
+"""Django controller for CSS Janus."""
 
 __author__ = 'elsigh@google.com (Lindsey Simon)'
 
@@ -10,21 +10,25 @@ import urllib
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
+from django.utils.translation import gettext as _
 
 import cssjanus
 
-# Thsi regex is for splitting textarea input.
+
+# This regex is for splitting textarea input.
 NEWLINE_RE = re.compile(r'[\n]')
 
 def index(request):
   """CSS Janus web form handler."""
-  
   if request.method == 'GET':
     logging.debug('Starting cssjanus GET processing')
-    return render_to_response('cssjanus.tpl', {})
+    
+    template_values = {}
+    return render_to_response('cssjanus.html', template_values)
 
   else:
     logging.debug('Starting cssjanus POST processing')
+    
     csstext = request.REQUEST['csstext']
     cssuri = request.REQUEST['cssuri']
     message = ''
@@ -55,7 +59,7 @@ def index(request):
     else:
       logging.debug('Nothing to process, empty post')
       lines = []
-      message = "You need to put some text in the css field or uri field."
+      message = _('You need to put some text in the css field or uri field.')
     
     result = cssjanus.ChangeLeftToRightToLeft(lines,
                                               swap_ltr_rtl_in_url,
@@ -69,10 +73,10 @@ def index(request):
       'result': result,
       'swap_ltr_rtl_in_url': swap_ltr_rtl_in_url,
       'swap_left_right_in_url': swap_left_right_in_url
-    }  
+    }
     logging.debug('Finished with cssjanus POST processing')
     
-    return render_to_response('cssjanus.tpl', template_values)
+    return render_to_response('cssjanus.html', template_values)
   
 
 def do(request):

@@ -40,7 +40,7 @@ Flags:
   --swap_ltr_rtl_in_url: Fixes "ltr"/"rtl" string within urls.
   Ex: ./cssjanus.py --swap_ltr_rtl_in_url < file.css > file_rtl.css  
   
-If you'd like to make use of the bundled django webapp version of cssjanus,
+If you'd like to make use of the bundled django(0.96) webapp version of cssjanus,
 you'll need to edit django_settings and set the TEMPLATE_DIRS variable
 to the absolute path of your cssjanus checkout. Next, open django_urls.py and 
 edit the document_root (last line in that file). Lastly, edit django_run.sh and
@@ -56,12 +56,14 @@ will make understanding and fixing the bug easier.
 
 ==Todo==
 
-* Come up with a way to tell cssjanus to ignore some particular className(s).
-* Include some helpers for some typical bidi text solutions.
+* Include some helpers for some typical bidi text solutions?
+* Aural CSS (azimuth) swapping?
 
 ==Contributors==
 
-Additional thanks to Mike Samuel for his work on csslex.py
+Additional thanks to Mike Samuel for his work on csslex.py, Andy Perelson for
+his help coding and reviewing, Stephen Zabel for his help with i18n and my sanity,
+and to Eric Meyer for his thoughtful input.
 
 ==License==
 
