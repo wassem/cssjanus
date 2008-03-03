@@ -1,10 +1,10 @@
 #!/bin/bash
-
-# Provided you've installed the django libraries on your machine, you should
-# be able to run the local devel server simply by editing this file to
-# point to the absolute path of your checkout and then running:
+# Author 'elsigh@google.com (Lindsey Simon)'
+# This is a convenience script for me to play with cssjanus.
 #  ./django_run.sh runserver
 
-export PYTHONPATH=/home/elsigh/public_html/cssjanus
+# If you're using a path other than the system path for django
+export DJANGO_PATH=/home/elsigh/src/django-trunk
+export PYTHONPATH=$DJANGO_PATH:/home/elsigh/public_html/cssjanus
 export DJANGO_SETTINGS_MODULE=django_settings
-django-admin $@
+$DJANGO_PATH/django/bin/django-admin.py $@
