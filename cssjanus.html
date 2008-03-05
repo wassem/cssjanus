@@ -50,6 +50,13 @@
         </div>
         
         <h2>CSSJanus {% trans "Left-to-Right-to-Left-ifyer" %}</h2>
+        
+        {% ifequal LANGUAGE_CODE "ar" %}
+        <h3>
+          اعتذر لهذه الترجمة ، وأنا استخدم الحاسوب لنفعل ذلك كما اني لا أقرأ العربية. لا تتردد في ارسال التصويبات على المؤلف!
+        </h3>
+        {% endifequal %}
+        
         <p>
           {% trans "This webapp uses cssjanus.py to convert LTR(left to right) properties and values in a CSS file to RTL counterparts and vice-versa." %}
         </p>
