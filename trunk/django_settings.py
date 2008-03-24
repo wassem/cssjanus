@@ -25,6 +25,7 @@ LANGUAGES = (
   ('ar', gettext('Arabic')),
   ('en', gettext('English')),
   ('fr', gettext('French')),
+  ('fa', gettext('Persian')),
 )
 
 TEMPLATE_DIRS = (
