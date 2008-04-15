@@ -4,16 +4,17 @@
 
 __author__ = 'elsigh@google.com (Lindsey Simon)'
 
+import os
+
 # YOU NEED TO SET THIS VARIABLE TO POINT TO YOUR INSTALL PATH
-CSSJANUS_DIR = '/home/elsigh/public_html/cssjanus'
+CSSJANUS_DIR = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 LANGUAGE_CODE = 'en'
 TIME_ZONE = 'US/Pacific'
-DATABASE_ENGINE = 'sqlite3' 
-DATABASE_NAME = CSSJANUS_DIR + '/cssjanus.db'
+#DATABASE_ENGINE = 'sqlite3' 
 USE_I18N = True
 MIDDLEWARE_CLASSES = (
   'django.middleware.common.CommonMiddleware',
@@ -44,3 +45,4 @@ INSTALLED_APPS = (
   'django.contrib.sessions',
   'cssjanus'
 )
+SESSION_ENGINE = 'gae_sessions'

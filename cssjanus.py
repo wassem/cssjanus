@@ -58,8 +58,8 @@ LOOKBEHIND_NOT_LETTER = r'(?<![a-zA-Z])'
 # Read literally, it says ignore cases where the word left, for instance, is
 # directly followed by valid classname characters and a curly brace.
 # ex: .column-left {float: left} will become .column-left {float: right}
-LOOKAHEAD_NOT_BRACE = r'(?!(?:%s|%s|\.|\,|\+|>)*?\{)' % (csslex.NMCHAR,
-                                                         csslex.SPACE)
+LOOKAHEAD_NOT_OPEN_BRACE = r'(?!(?:%s|%s|\.|\,|\+|>)*?{)' % (csslex.NMCHAR,
+                                                              csslex.SPACE)
 
 # These two lookaheads are to test whether or not we are within a
 # background: url(HERE) situation.
@@ -140,12 +140,12 @@ DIRECTION_RTL_RE = re.compile(r'%s(rtl)' % DIRECTION_RE)
 LEFT_RE = re.compile('%s(%s)%s%s' % (LOOKBEHIND_NOT_LETTER,
                                      LEFT,
                                      LOOKAHEAD_NOT_CLOSING_PAREN,
-                                     LOOKAHEAD_NOT_BRACE),
+                                     LOOKAHEAD_NOT_OPEN_BRACE),
                      re.I)
 RIGHT_RE = re.compile('%s(%s)%s%s' % (LOOKBEHIND_NOT_LETTER,
                                       RIGHT,
                                       LOOKAHEAD_NOT_CLOSING_PAREN,
-                                      LOOKAHEAD_NOT_BRACE),
+                                      LOOKAHEAD_NOT_OPEN_BRACE),
                       re.I)
 LEFT_IN_URL_RE = re.compile('%s(%s)%s' % (LOOKBEHIND_NOT_LETTER,
                                           LEFT,
@@ -173,9 +173,21 @@ NOFLIP_TOKEN = r'\@noflip'
 NOFLIP_ANNOTATION = r'/\*%s%s%s\*/' % (csslex.WHITESPACE,
                                        NOFLIP_TOKEN,
                                        csslex. WHITESPACE)
+
+# After a NOFLIP_ANNOTATION, and within a class selector, we want to be able
+# to set aside a single rule not to be flipped. We can do this by matching
+# our NOFLIP annotation and then using a lookahead to make sure there is not
+# an opening brace before the match.
+NOFLIP_SINGLE_RE = re.compile(r'(%s%s[^;}]+;?)' % (NOFLIP_ANNOTATION,
+                                                   LOOKAHEAD_NOT_OPEN_BRACE),
+                              re.I)
+
 # After a NOFLIP_ANNOTATION, we want to grab anything up until the next } which
-# means the entire following class block. This will prevent changes to it.
-NOFLIP_RE = re.compile('(%s[^\}]*\})' % NOFLIP_ANNOTATION, re.I)
+# means the entire following class block. This will prevent all of its
+# declarations from being flipped.
+NOFLIP_CLASS_RE = re.compile(r'(%s%s})' % (NOFLIP_ANNOTATION,
+                                           CHARS_WITHIN_SELECTOR), 
+                             re.I)
 
 
 class Tokenizer:
@@ -452,9 +464,13 @@ def ChangeLeftToRightToLeft(lines,
   logging.debug('LINES COUNT: %s' % len(lines))
   line = TOKEN_LINES.join(lines)
   
+  # Tokenize any single line rules with the /* noflip */ annotation.
+  noflip_single_tokenizer = Tokenizer(NOFLIP_SINGLE_RE, 'NOFLIP_SINGLE')
+  line = noflip_single_tokenizer.Tokenize(line)
+  
   # Tokenize any class rules with the /* noflip */ annotation.
-  noflip_tokenizer = Tokenizer(NOFLIP_RE, 'NOFLIP')
-  line = noflip_tokenizer.Tokenize(line)
+  noflip_class_tokenizer = Tokenizer(NOFLIP_CLASS_RE, 'NOFLIP_CLASS')
+  line = noflip_class_tokenizer.Tokenize(line)
   
   # Tokenize the comments so we can preserve them through the changes.
   comment_tokenizer = Tokenizer(COMMENT_RE, 'C')
@@ -474,8 +490,11 @@ def ChangeLeftToRightToLeft(lines,
   line = FixFourPartNotation(line)
   line = FixBackgroundPosition(line)
   
-  # DeTokenize the noflips.
-  line = noflip_tokenizer.DeTokenize(line)
+  # DeTokenize the single line noflips.
+  line = noflip_single_tokenizer.DeTokenize(line)
+  
+  # DeTokenize the class-level noflips.
+  line = noflip_class_tokenizer.DeTokenize(line)
   
   # DeTokenize the comments.
   line = comment_tokenizer.DeTokenize(line)
