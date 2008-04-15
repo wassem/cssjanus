@@ -14,6 +14,9 @@ well as some not-so-obvious ones (cursor, background-position %, etc...).
 The script is designed to offer flexibility to account for cases when you do 
 not want to change certain rules which exist to account for bidirectional text
 display bugs, as well as situations where you may or may not want to flip annotations inside of the background url string.
+Note that you can disable CSSJanus from running on an entire class or any 
+rule within a class by prepending a /* @noflip */ comment before the rule(s)
+you want CSSJanus to ignore.
 
 CSSJanus itself is not always enough to make a website that works in a LTR
 language context work in a RTL language all the way, but it is a start. 
@@ -40,12 +43,12 @@ Flags:
   --swap_ltr_rtl_in_url: Fixes "ltr"/"rtl" string within urls.
   Ex: ./cssjanus.py --swap_ltr_rtl_in_url < file.css > file_rtl.css  
   
-If you'd like to make use of the bundled django(0.96) webapp version of cssjanus,
-you'll need to edit django_settings and set the TEMPLATE_DIRS variable
-to the absolute path of your cssjanus checkout. Next, open django_urls.py and 
-edit the document_root (last line in that file). Lastly, edit django_run.sh and
-change the PYTHONPATH. You should then be able to fire up the local dev 
-server simply by running "./django_run.sh runserver" from the command line.
+If you'd like to make use of the webapp version of cssjanus, you'll need to
+download the Google App Engine SDK
+  http://code.google.com/appengine/downloads.html
+and also drop a "django" directory into this directory, with the latest svn
+from django. You should be good to go with that setup. Please let me know 
+otherwise.
 
 ==Bugs, Patches==
 

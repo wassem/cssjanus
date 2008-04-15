@@ -466,7 +466,24 @@ class CSSJANUSUnitTest(unittest.TestCase):
     
     testcase = ['/* @noflip */\ndiv { float: left; }\ndiv { float: left; }']
     shouldbe = ['/* @noflip */\ndiv { float: left; }\ndiv { float: right; }']
-    self.assertEqual(shouldbe, cssltrtl.ChangeLeftToRightToLeft(testcase))
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+    
+    # Test @noflip on single rules within classes
+    testcase = ['div { float: left; /* @noflip */ float: left; }']
+    shouldbe = ['div { float: right; /* @noflip */ float: left; }']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+    
+    testcase = ['div\n{ float: left;\n/* @noflip */\n float: left;\n }']
+    shouldbe = ['div\n{ float: right;\n/* @noflip */\n float: left;\n }']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+    
+    testcase = ['div\n{ float: left;\n/* @noflip */\n text-align: left\n }']
+    shouldbe = ['div\n{ float: right;\n/* @noflip */\n text-align: left\n }']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+    
+    testcase = ['div\n{ /* @noflip */\ntext-align: left;\nfloat: left\n  }']
+    shouldbe = ['div\n{ /* @noflip */\ntext-align: left;\nfloat: right\n  }']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
   
 if __name__ == '__main__':
   unittest.main()

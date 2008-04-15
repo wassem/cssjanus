@@ -6,11 +6,12 @@ __author__ = 'elsigh@google.com (Lindsey Simon)'
 
 import logging
 import re
-import urllib
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.utils.translation import gettext as _
+
+from google.appengine.api import urlfetch
 
 import cssjanus
 
@@ -23,7 +24,9 @@ def index(request):
   if request.method == 'GET':
     logging.debug('Starting cssjanus GET processing')
     
-    template_values = {}
+    template_values = {
+      'host': request.get_host(),
+    }
     return render_to_response('cssjanus.html', template_values)
 
   else:
@@ -42,20 +45,16 @@ def index(request):
       logging.info('Processing raw CSS text')
       lines = NEWLINE_RE.split(csstext)
     
-    # If they typed into the CSS uri field, grab the css with urllib.
+    # If they typed into the CSS uri field, grab the css with urlfetch.
     elif cssuri:
       logging.info('Processing CSS URI %s' % cssuri)
       if cssuri.find('http://') != 0 and cssuri.find('https://') != 0:
         cssuri = 'http://' + cssuri
-      try:
-        opener = urllib.FancyURLopener({})
-        f = opener.open(cssuri)
-        lines = NEWLINE_RE.split(f.read())
-        logging.debug('Successfully opened and read %s' % cssuri)
-      except IOError, e:
-        logging.debug('Failure fetching/processing %s' % cssuri)
-        lines = []
-        message = "Error while attempting to fetch %s" % (cssuri)
+      
+      content = urlfetch.fetch(cssuri).content
+      lines = NEWLINE_RE.split(content)
+      logging.debug('Successfully opened and read %s' % cssuri)
+      
     else:
       logging.debug('Nothing to process, empty post')
       lines = []
@@ -71,6 +70,7 @@ def index(request):
       'cssuri': cssuri,
       'message': message,
       'result': result,
+      'host': request.get_host(),
       'swap_ltr_rtl_in_url': swap_ltr_rtl_in_url,
       'swap_left_right_in_url': swap_left_right_in_url
     }
@@ -91,15 +91,10 @@ def do(request):
     logging.info('Processing CSS URI %s' % cssuri)
     if cssuri.find('http://') != 0 and cssuri.find('https://') != 0:
       cssuri = 'http://' + cssuri
-    try:
-      opener = urllib.FancyURLopener({})
-      f = opener.open(cssuri)
-      lines = NEWLINE_RE.split(f.read())
-    except IOError, e:
-      logging.debug('Failure fetching/processing %s' % cssuri)
-      lines = []
-      message = "Error while attempting to fetch %s" % (cssuri)
       
+    content = urlfetch.fetch(cssuri).content
+    lines = NEWLINE_RE.split(content)
+    
     result = cssjanus.ChangeLeftToRightToLeft(lines,
                                               swap_ltr_rtl_in_url,
                                               swap_left_right_in_url)
