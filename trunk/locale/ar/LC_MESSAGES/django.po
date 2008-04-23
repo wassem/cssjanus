@@ -22,15 +22,16 @@ msgstr "تغيير اللغة"
 
 #: cssjanus.html:52
 msgid "Left-to-Right-to-Left-ifyer"
-msgstr "من اليسار الى اليمين الى اليسار"
+msgstr "من اليسار إلى اليمين إلى اليسار"
 
 #: cssjanus.html:54
 msgid ""
 "This webapp uses cssjanus.py to convert LTR(left to right) properties and "
 "values in a CSS file to RTL counterparts and vice-versa."
 msgstr ""
-"هذا webapp يستخدم لتحويل cssjanus.py لتر (من اليسار الى اليمين) وخصائص"
-"القيم في ملف CSS لRTL النظراء والعكس بالعكس."
+"
+هذا التطبيق يستخدم لتحويل الاتجاه من اليمين لليسار والعكس، سواءً في الخصائص أو القيم لملفات صفحات الأنماط السي إس إس"
+# NOTE: I merged the two sentences into one .. I hope no problem !!
 
 #: cssjanus.html:64
 msgid "Author:"
@@ -38,23 +39,23 @@ msgstr "المؤلف :"
 
 #: cssjanus.html:80
 msgid "Paste or Type CSS:"
-msgstr "الصق او نوع CSS :"
+msgstr "اكتب أو الصق ملف الأنماط هنا:"
 
 #: cssjanus.html:87
 msgid "OR use an URI to a CSS file:"
-msgstr "او استخدام اوري لCSS الملف :"
+msgstr "أو جرب رابطاً لملف أنماط خارجي:"
 
 #: cssjanus.html:93
 msgid "Flags"
-msgstr "الاعلام"
+msgstr "إشارات"
 
 #: cssjanus.html:109
 msgid "Run CSSJanus!"
-msgstr "البعيد CSSJanus!"
+msgstr "نفّذ العملية"
 
 #: cssjanus.html:110
 msgid "Reset"
-msgstr "اعادة تعيين"
+msgstr "إعادة تعيين"
 
 #: cssjanus.html:118
 msgid "Result CSS:"
@@ -68,15 +69,16 @@ msgstr "النتائج ستظهر هنا..."
 msgid ""
 "You could also embed this webapp directly in your markup with your publicly "
 "accessible CSS files like so:"
-msgstr "يمكنك ايضا ان يتم تضمين هذا webapp مباشرة في حسابك مع ترميز الخاص بك هو متاح للجمهور CSS ملفات مثل ذلك :"
+msgstr "باستطاعتك أيضاً أن تدمج هذا التطبيق في شفرتك البرمجية لموقعك، شرط أن يكون ملف الأنماط متاحاً على الويب"
+# NOTE: I merged the two sentences into one .. I hope no problem !!
 
 #: cssjanus.html:153
 msgid "Try this example CSS!"
-msgstr "جرب هذا المثال CSS"
+msgstr "جرب هذا المثال لملف الأنماط"
 
 #: django_cssjanus.py:62
 msgid "You need to put some text in the css field or uri field."
-msgstr "انت بحاجة الى وضع بعض النصوص في الميدان أو CSS اوري الميدانيه."
+msgstr "يجب أن تكتب شيئاً في حقل الأنماط أو في رابط الملف."
 
 #: django_settings.py:43
 msgid "Arabic"
@@ -84,15 +86,15 @@ msgstr "العربية"
 
 #: django_settings.py:44
 msgid "English"
-msgstr ""
+msgstr "الانجليزية"
 
 #: django_settings.py:45
 msgid "French"
-msgstr ""
+msgstr "الفرنسية"
 
 #: django_settings.py:46
 msgid "Hebrew"
-msgstr ""
+msgstr "العبرية"
 
 #: django_settings.py:47
 msgid "Chinese"

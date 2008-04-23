@@ -88,9 +88,9 @@ def do(request):
     swap_ltr_rtl_in_url = flags[0]
     swap_left_right_in_url = flags[1]
     
-    logging.info('Processing CSS URI %s' % cssuri)
     if cssuri.find('http://') != 0 and cssuri.find('https://') != 0:
       cssuri = 'http://' + cssuri
+    logging.info('Processing CSS URI %s' % cssuri)
       
     content = urlfetch.fetch(cssuri).content
     lines = NEWLINE_RE.split(content)
