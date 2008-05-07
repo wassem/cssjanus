@@ -75,23 +75,3 @@ msgstr ""
 #: django_cssjanus.py:62
 msgid "You need to put some text in the css field or uri field."
 msgstr ""
-
-#: django_settings.py:43
-msgid "Arabic"
-msgstr ""
-
-#: django_settings.py:44
-msgid "English"
-msgstr ""
-
-#: django_settings.py:45
-msgid "French"
-msgstr ""
-
-#: django_settings.py:46
-msgid "Hebrew"
-msgstr ""
-
-#: django_settings.py:47
-msgid "Chinese"
-msgstr ""

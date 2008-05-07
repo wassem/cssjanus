@@ -72,26 +72,3 @@ msgstr "این CSS آزمایشی را امتحان کنید!"
 msgid "You need to put some text in the css field or uri field."
 msgstr "شما بایستی مقداری در فیلد css یا در فیلد محل آن وارد کنید."
 
-#: django_settings.py:25
-msgid "Arabic"
-msgstr "عربی"
-
-#: django_settings.py:26
-msgid "English"
-msgstr "انگلیسی"
-
-#: django_settings.py:27
-msgid "French"
-msgstr "فرانسوی"
-
-# You may need this if you want to add Persian (Farsi) language
-#
-#: django_settings.py:28
-msgid "Persian"
-msgstr "فارسی"
-
-#~ msgid "Hebrew"
-#~ msgstr "عبری"
-#~ msgid "Chinese"
-#~ msgstr "چینی"
-
