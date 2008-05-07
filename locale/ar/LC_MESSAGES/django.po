@@ -29,8 +29,7 @@ msgid ""
 "This webapp uses cssjanus.py to convert LTR(left to right) properties and "
 "values in a CSS file to RTL counterparts and vice-versa."
 msgstr ""
-"
-هذا التطبيق يستخدم لتحويل الاتجاه من اليمين لليسار والعكس، سواءً في الخصائص أو القيم لملفات صفحات الأنماط السي إس إس"
+"هذا التطبيق يستخدم لتحويل الاتجاه من اليمين لليسار والعكس، سواءً في الخصائص أو القيم لملفات صفحات الأنماط السي إس إس"
 # NOTE: I merged the two sentences into one .. I hope no problem !!
 
 #: cssjanus.html:64
@@ -79,24 +78,3 @@ msgstr "جرب هذا المثال لملف الأنماط"
 #: django_cssjanus.py:62
 msgid "You need to put some text in the css field or uri field."
 msgstr "يجب أن تكتب شيئاً في حقل الأنماط أو في رابط الملف."
-
-#: django_settings.py:43
-msgid "Arabic"
-msgstr "العربية"
-
-#: django_settings.py:44
-msgid "English"
-msgstr "الانجليزية"
-
-#: django_settings.py:45
-msgid "French"
-msgstr "الفرنسية"
-
-#: django_settings.py:46
-msgid "Hebrew"
-msgstr "العبرية"
-
-#: django_settings.py:47
-msgid "Chinese"
-msgstr "الصينية"
-

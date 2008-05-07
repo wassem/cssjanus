@@ -70,7 +70,7 @@ msgstr "Les résultats seront ici"
 msgid ""
 "You could also embed this webapp directly in your markup with your publicly "
 "accessible CSS files like so:"
-msgstr "Aussi c'est possible d'embeder cet application directement en ton HTML comme ca:"
+msgstr "Vous pouvez également intégrer cette webapp directement dans votre marquage avec vos fichiers CSS accessibles au public comme ceci:"
 
 #: cssjanus.html:153
 msgid "Try this example CSS!"
@@ -78,25 +78,5 @@ msgstr "Essayez cet exemple CSS!"
 
 #: django_cssjanus.py:62
 msgid "You need to put some text in the css field or uri field."
-msgstr ""
-
-#: django_settings.py:43
-msgid "Arabic"
-msgstr ""
-
-#: django_settings.py:44
-msgid "English"
-msgstr ""
-
-#: django_settings.py:45
-msgid "French"
-msgstr ""
-
-#: django_settings.py:46
-msgid "Hebrew"
-msgstr ""
-
-#: django_settings.py:47
-msgid "Chinese"
 msgstr ""
 
