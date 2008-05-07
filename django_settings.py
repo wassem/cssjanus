@@ -24,8 +24,10 @@ MIDDLEWARE_CLASSES = (
 gettext = lambda s: s
 LANGUAGES = (
   ('ar', gettext('Arabic')),
+  ('zh_CN', gettext('Chinese')),
   ('en', gettext('English')),
   ('fr', gettext('French')),
+  ('ja', gettext('Japanese')),
   ('fa', gettext('Persian')),
 )
 

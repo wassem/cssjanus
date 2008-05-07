@@ -67,7 +67,8 @@ will make understanding and fixing the bug easier.
 Additional thanks to Mike Samuel for his work on csslex.py, Andy Perelson for
 his help coding and reviewing, Stephen Zabel for his help with i18n and my sanity,
 and to Eric Meyer for his thoughtful input.
-Thanks to Tariq Al-Omaireeni for an updated Arabic translation.
+Thanks to Masashi Kawashima for the Japanese translation.
+Thanks to Taaryk Taar and Tariq Al-Omaireeni for an updated Arabic translation.
 
 ==License==
 
