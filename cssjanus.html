@@ -51,12 +51,6 @@
         
         <h2>CSSJanus {% trans "Left-to-Right-to-Left-ifyer" %}</h2>
         
-        {% ifequal LANGUAGE_CODE "ar" %}
-        <h3>
-          اعتذر لهذه الترجمة ، وأنا استخدم الحاسوب لنفعل ذلك كما اني لا أقرأ العربية. لا تتردد في ارسال التصويبات على المؤلف!
-        </h3>
-        {% endifequal %}
-        
         <p>
           {% trans "This webapp uses cssjanus.py to convert LTR(left to right) properties and values in a CSS file to RTL counterparts and vice-versa." %}
         </p>
@@ -143,6 +137,10 @@
 &lt;/style&gt;</pre>
     </div>
         
+    <div>
+      <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif"
+alt="Powered by Google App Engine" width="120" height="30" />
+    </div>
     <script type="text/javascript">
       var exampleText = '.classname-should-not-change-ltr-left-rtl-right {\r' +
                         '  padding: 1px 2px 3px 4px;\r' + 

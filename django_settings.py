@@ -27,6 +27,7 @@ LANGUAGES = (
   ('zh_CN', gettext('Chinese')),
   ('en', gettext('English')),
   ('fr', gettext('French')),
+  ('de', gettext('German')),
   ('ja', gettext('Japanese')),
   ('fa', gettext('Persian')),
 )
