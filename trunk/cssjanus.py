@@ -11,7 +11,7 @@
    file appropriate for LeftToRight oriented languages and RightToLeft ones.
    This utility will hopefully help your structural layout done in CSS in
    terms of its RTL compatibility. It will not help with some of the more
-   complicated bidirectional text iseues.
+   complicated bidirectional text issues.
 """
 
 __author__ = 'elsigh@google.com (Lindsey Simon)'
