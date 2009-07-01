@@ -58,8 +58,9 @@ LOOKBEHIND_NOT_LETTER = r'(?<![a-zA-Z])'
 # Read literally, it says ignore cases where the word left, for instance, is
 # directly followed by valid classname characters and a curly brace.
 # ex: .column-left {float: left} will become .column-left {float: right}
-LOOKAHEAD_NOT_OPEN_BRACE = r'(?!(?:%s|%s|\.|\,|\+|>)*?{)' % (csslex.NMCHAR,
-                                                              csslex.SPACE)
+LOOKAHEAD_NOT_OPEN_BRACE = (r'(?!(?:%s|%s|%s|#|\:|\.|\,|\+|>)*?{)' %
+                            (csslex.NMCHAR, TOKEN_LINES, csslex.SPACE))
+
 
 # These two lookaheads are to test whether or not we are within a
 # background: url(HERE) situation.
@@ -73,15 +74,26 @@ LOOKAHEAD_FOR_CLOSING_PAREN = r'(?=%s?%s\))' % (csslex.URL_CHARS,
 # Compile a regex to swap left and right values in 4 part notations.
 # We need to match negatives and decimal numeric values.
 # ex. 'margin: .25em -2px 3px 0' becomes 'margin: .25em 0 3px -2px'.
-POSSIBLY_NEGATIVE_QUANTITY = r'((?:-?%s)|(?:inherit|auto))' % (csslex.QUANTITY)
+POSSIBLY_NEGATIVE_QUANTITY = r'((?:-?%s)|(?:inherit|auto))' % csslex.QUANTITY
 POSSIBLY_NEGATIVE_QUANTITY_SPACE = r'%s%s%s' % (POSSIBLY_NEGATIVE_QUANTITY,
                                                 csslex.SPACE,
                                                 csslex.WHITESPACE)
-FOUR_NOTATION_RE = re.compile(r'%s%s%s%s' % (POSSIBLY_NEGATIVE_QUANTITY_SPACE,
-                                             POSSIBLY_NEGATIVE_QUANTITY_SPACE,
-                                             POSSIBLY_NEGATIVE_QUANTITY_SPACE,
-                                             POSSIBLY_NEGATIVE_QUANTITY),
-                              re.I)
+FOUR_NOTATION_QUANTITY_RE = re.compile(r'%s%s%s%s' %
+                                       (POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                        POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                        POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                        POSSIBLY_NEGATIVE_QUANTITY),
+                                       re.I)
+COLOR = r'(%s|%s)' % (csslex.NAME, csslex.HASH)
+COLOR_SPACE = r'%s%s' % (COLOR, csslex.SPACE)
+FOUR_NOTATION_COLOR_RE = re.compile(r'(-color%s:%s)%s%s%s(%s)' %
+                                    (csslex.WHITESPACE,
+                                     csslex.WHITESPACE,
+                                     COLOR_SPACE,
+                                     COLOR_SPACE,
+                                     COLOR_SPACE,
+                                     COLOR),
+                                    re.I)
 
 # Compile the cursor resize regexes
 CURSOR_EAST_RE = re.compile(LOOKBEHIND_NOT_LETTER + '([ns]?)e-resize')
@@ -105,7 +117,7 @@ BG_HORIZONTAL_PERCENTAGE_X_RE = re.compile(r'background-position-x(%s:%s)'
                                            '(%s)%%' % (csslex.WHITESPACE,
                                                        csslex.WHITESPACE,
                                                        csslex.NUM))
-                                                       
+
 # Matches the opening of a body selector.
 BODY_SELECTOR = r'body%s{%s' % (csslex.WHITESPACE, csslex.WHITESPACE)
 
@@ -127,7 +139,7 @@ BODY_DIRECTION_RTL_RE = re.compile(r'(%s)(%s)(%s)(rtl)' %
                                    re.I)
 
 
-# Allows us to swap "direction:ltr" with "direction:rtl" and 
+# Allows us to swap "direction:ltr" with "direction:rtl" and
 # vice versa anywhere in a line.
 DIRECTION_LTR_RE = re.compile(r'%s(ltr)' % DIRECTION_RE)
 DIRECTION_RTL_RE = re.compile(r'%s(rtl)' % DIRECTION_RE)
@@ -135,7 +147,7 @@ DIRECTION_RTL_RE = re.compile(r'%s(rtl)' % DIRECTION_RE)
 # We want to be able to switch left with right and vice versa anywhere
 # we encounter left/right strings, EXCEPT inside the background:url(). The next
 # two regexes are for that purpose. We have alternate IN_URL versions of the
-# regexes compiled in case the user passes the flag that they do 
+# regexes compiled in case the user passes the flag that they do
 # actually want to have left and right swapped inside of background:urls.
 LEFT_RE = re.compile('%s(%s)%s%s' % (LOOKBEHIND_NOT_LETTER,
                                      LEFT,
@@ -186,7 +198,7 @@ NOFLIP_SINGLE_RE = re.compile(r'(%s%s[^;}]+;?)' % (NOFLIP_ANNOTATION,
 # means the entire following class block. This will prevent all of its
 # declarations from being flipped.
 NOFLIP_CLASS_RE = re.compile(r'(%s%s})' % (NOFLIP_ANNOTATION,
-                                           CHARS_WITHIN_SELECTOR), 
+                                           CHARS_WITHIN_SELECTOR),
                              re.I)
 
 
@@ -195,7 +207,7 @@ class Tokenizer:
 
   def __init__(self, token_re, token_string):
     """Constructor for the Tokenizer.
-    
+
     Args:
       token_re: A regex for the string to be replace by a token.
       token_string: The string to put between token delimiters when tokenizing.
@@ -207,31 +219,31 @@ class Tokenizer:
 
   def Tokenize(self, line):
     """Replaces any string matching token_re in line with string tokens.
-    
+
     By passing a function as an argument to the re.sub line below, we bypass
     the usual rule where re.sub will only replace the left-most occurrence of
     a match by calling the passed in function for each occurrence.
-    
+
     Args:
       line: A line to replace token_re matches in.
-  
+
     Returns:
       line: A line with token_re matches tokenized.
     """
     line = self.token_re.sub(self.TokenizeMatches, line)
     logging.debug('Tokenizer::Tokenize returns: %s' % line)
     return line
-  
+
   def DeTokenize(self, line):
     """Replaces tokens with the original string.
-  
+
     Args:
       line: A line with tokens.
-  
+
     Returns:
       line with any tokens replaced by the original string.
     """
-    
+
     # Put all of the comments back in by their comment token.
     for i, original in enumerate(self.originals):
       token = '%s%s_%s%s' % (TOKEN_DELIMITER, self.token_string, i + 1,
@@ -240,13 +252,13 @@ class Tokenizer:
       logging.debug('Tokenizer::DeTokenize i:%s w/%s' % (i, token))
     logging.debug('Tokenizer::DeTokenize returns: %s' % line)
     return line
-  
+
   def TokenizeMatches(self, m):
     """Replaces matches with tokens and stores the originals.
-  
+
     Args:
       m: A match object.
-  
+
     Returns:
       A string token which replaces the CSS comment.
     """
@@ -256,11 +268,11 @@ class Tokenizer:
                           self.token_string,
                           len(self.originals),
                           TOKEN_DELIMITER)
-  
+
 
 def FixBodyDirectionLtrAndRtl(line):
   """Replaces ltr with rtl and vice versa ONLY in the body direction.
-  
+
   Args:
     line: A string to replace instances of ltr with rtl.
   Returns:
@@ -268,14 +280,14 @@ def FixBodyDirectionLtrAndRtl(line):
     line = FixBodyDirectionLtrAndRtl('body { direction:ltr }')
     line will now be 'body { direction:rtl }'.
   """
-  
+
   line = BODY_DIRECTION_LTR_RE.sub('\\1\\2\\3%s' % TMP_TOKEN, line)
   line = BODY_DIRECTION_RTL_RE.sub('\\1\\2\\3%s' % LTR, line)
   line = line.replace(TMP_TOKEN, RTL)
   logging.debug('FixBodyDirectionLtrAndRtl returns: %s' % line)
   return line
-  
-  
+
+
 def FixLeftAndRight(line):
   """Replaces left with right and vice versa in line.
 
@@ -293,14 +305,14 @@ def FixLeftAndRight(line):
   line = line.replace(TMP_TOKEN, RIGHT)
   logging.debug('FixLeftAndRight returns: %s' % line)
   return line
-  
-  
+
+
 def FixLeftAndRightInUrl(line):
   """Replaces left with right and vice versa ONLY within background urls.
 
   Args:
     line: A string in which to replace left with right and vice versa.
-    
+
   Returns:
     line with left and right swapped in the url string. For example:
     line = FixLeftAndRightInUrl('background:url(right.png)')
@@ -316,23 +328,23 @@ def FixLeftAndRightInUrl(line):
 
 def FixLtrAndRtlInUrl(line):
   """Replaces ltr with rtl and vice versa ONLY within background urls.
-  
+
   Args:
     line: A string in which to replace ltr with rtl and vice versa.
-    
+
   Returns:
     line with left and right swapped. For example:
     line = FixLtrAndRtlInUrl('background:url(rtl.png)')
     line will now be 'background:url(ltr.png)'.
   """
-  
+
   line = LTR_IN_URL_RE.sub(TMP_TOKEN, line)
   line = RTL_IN_URL_RE.sub(LTR, line)
   line = line.replace(TMP_TOKEN, RTL)
   logging.debug('FixLtrAndRtlInUrl returns: %s' % line)
   return line
-  
-  
+
+
 def FixCursorProperties(line):
   """Fixes directional CSS cursor properties.
 
@@ -344,7 +356,7 @@ def FixCursorProperties(line):
     line = FixCursorProperties('cursor: ne-resize')
     line will now be 'cursor: nw-resize'.
   """
-  
+
   line = CURSOR_EAST_RE.sub('\\1' + TMP_TOKEN, line)
   line = CURSOR_WEST_RE.sub('\\1e-resize', line)
   line = line.replace(TMP_TOKEN, 'w-resize')
@@ -363,14 +375,15 @@ def FixFourPartNotation(line):
     line = FixFourPartNotation('padding: 1px 2px 3px 4px')
     line will now be 'padding: 1px 4px 3px 2px'.
   """
-  line = FOUR_NOTATION_RE.sub('\\1 \\4 \\3 \\2', line)
+  line = FOUR_NOTATION_QUANTITY_RE.sub('\\1 \\4 \\3 \\2', line)
+  line = FOUR_NOTATION_COLOR_RE.sub('\\1\\2 \\5 \\4 \\3', line)
   logging.debug('FixFourPartNotation returns: %s' % line)
   return line
 
 
 def FixBackgroundPosition(line):
   """Fixes horizontal background percentage values in line.
-  
+
   Args:
     line: A string to fix horizontal background position values in.
 
@@ -382,11 +395,11 @@ def FixBackgroundPosition(line):
                                            line)
   logging.debug('FixBackgroundPosition returns: %s' % line)
   return line
-  
+
 
 def CalculateNewBackgroundPosition(m):
   """Fixes horizontal background-position percentages.
-  
+
   This function should be used as an argument to re.sub since it needs to
   perform replacement specific calculations.
 
@@ -402,7 +415,7 @@ def CalculateNewBackgroundPosition(m):
 
   # The flipped value is the offset from 100%
   new_x = str(100-int(m.group(4)))
-  
+
   # Since m.group(1) may very well be None type and we need a string..
   if m.group(1):
     position_string = m.group(1)
@@ -411,11 +424,11 @@ def CalculateNewBackgroundPosition(m):
 
   return 'background%s%s%s%s%%%s' % (position_string, m.group(2), m.group(3),
                                      new_x, m.group(5))
-  
+
 
 def CalculateNewBackgroundPositionX(m):
   """Fixes percent based background-position-x.
-  
+
   This function should be used as an argument to re.sub since it needs to
   perform replacement specific calculations.
 
@@ -428,7 +441,7 @@ def CalculateNewBackgroundPositionX(m):
                                       'background-position-x: 75%')
     will return 'background-position-x: 25%'.
   """
-  
+
   # The flipped value is the offset from 100%
   new_x = str(100-int(m.group(2)))
 
@@ -439,18 +452,18 @@ def ChangeLeftToRightToLeft(lines,
                             swap_ltr_rtl_in_url=None,
                             swap_left_right_in_url=None):
   """Turns lines into a stream and runs the fixing functions against it.
-  
+
   Args:
     lines: An list of CSS lines.
     swap_ltr_rtl_in_url: Overrides this flag if param is set.
     swap_left_right_in_url: Overrides this flag if param is set.
-    
+
   Returns:
     The same lines, but with left and right fixes.
   """
-  
+
   global FLAGS
-  
+
   # Possibly override flags with params.
   logging.debug('ChangeLeftToRightToLeft swap_ltr_rtl_in_url=%s, '
                 'swap_left_right_in_url=%s' % (swap_ltr_rtl_in_url,
@@ -459,54 +472,54 @@ def ChangeLeftToRightToLeft(lines,
     swap_ltr_rtl_in_url = FLAGS['swap_ltr_rtl_in_url']
   if swap_left_right_in_url is None:
     swap_left_right_in_url = FLAGS['swap_left_right_in_url']
-  
+
   # Turns the array of lines into a single line stream.
   logging.debug('LINES COUNT: %s' % len(lines))
   line = TOKEN_LINES.join(lines)
-  
+
   # Tokenize any single line rules with the /* noflip */ annotation.
   noflip_single_tokenizer = Tokenizer(NOFLIP_SINGLE_RE, 'NOFLIP_SINGLE')
   line = noflip_single_tokenizer.Tokenize(line)
-  
+
   # Tokenize any class rules with the /* noflip */ annotation.
   noflip_class_tokenizer = Tokenizer(NOFLIP_CLASS_RE, 'NOFLIP_CLASS')
   line = noflip_class_tokenizer.Tokenize(line)
-  
+
   # Tokenize the comments so we can preserve them through the changes.
   comment_tokenizer = Tokenizer(COMMENT_RE, 'C')
   line = comment_tokenizer.Tokenize(line)
-  
+
   # Here starteth the various left/right orientation fixes.
   line = FixBodyDirectionLtrAndRtl(line)
-  
+
   if swap_left_right_in_url:
     line = FixLeftAndRightInUrl(line)
-  
+
   if swap_ltr_rtl_in_url:
     line = FixLtrAndRtlInUrl(line)
-    
+
   line = FixLeftAndRight(line)
   line = FixCursorProperties(line)
   line = FixFourPartNotation(line)
   line = FixBackgroundPosition(line)
-  
+
   # DeTokenize the single line noflips.
   line = noflip_single_tokenizer.DeTokenize(line)
-  
+
   # DeTokenize the class-level noflips.
   line = noflip_class_tokenizer.DeTokenize(line)
-  
+
   # DeTokenize the comments.
   line = comment_tokenizer.DeTokenize(line)
-  
+
   # Rejoin the lines back together.
   lines = line.split(TOKEN_LINES)
-  
+
   return lines
-   
+
 def usage():
   """Prints out usage information."""
-  
+
   print 'Usage:'
   print '  ./cssjanus.py < file.css > file-rtl.css'
   print 'Flags:'
@@ -517,19 +530,19 @@ def usage():
 
 def setflags(opts):
   """Parse the passed in command line arguments and set the FLAGS global.
-  
+
   Args:
     opts: getopt iterable intercepted from argv.
   """
-  
+
   global FLAGS
-  
+
   # Parse the arguments.
   for opt, arg in opts:
     logging.debug('opt: %s, arg: %s' % (opt, arg))
     if opt in ("-h", "--help"):
-      usage()                  
-      sys.exit()                  
+      usage()
+      sys.exit()
     elif opt in ("-d", "--debug"):
       logging.getLogger().setLevel(logging.DEBUG)
     elif opt == 'swap_ltr_rtl_in_url':
@@ -540,19 +553,19 @@ def setflags(opts):
 
 def main(argv):
   """Sends stdin lines to ChangeLeftToRightToLeft and writes to stdout."""
-  
+
   # Define the flags.
-  try:                                
+  try:
     opts, args = getopt.getopt(argv, 'hd', ['help', 'debug',
                                             'swap_left_right_in_url=',
                                             'swap_ltr_rtl_in_url='])
   except getopt.GetoptError:
     usage()
     sys.exit(2)
-  
+
   # Parse and set the flags.
   setflags(opts)
-  
+
   # Call the main routine with all our functionality.
   fixed_lines = ChangeLeftToRightToLeft(sys.stdin.readlines())
   sys.stdout.write(''.join(fixed_lines))

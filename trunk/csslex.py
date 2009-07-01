@@ -11,7 +11,7 @@ __author__ = ['elsigh@google.com (Lindsey Simon)',
               'msamuel@google.com (Mike Samuel)']
 
 # public symbols
-__all__ = [ "NEWLINE", "HEX", "NON_ASCII", "UNICODE", "ESCAPE", "NMSTART", "NMCHAR", "STRING1", "STRING2", "IDENT", "NAME", "NUM", "STRING", "URL", "SPACE", "WHITESPACE", "COMMENT", "QUANTITY", "PUNC" ]
+__all__ = [ "NEWLINE", "HEX", "NON_ASCII", "UNICODE", "ESCAPE", "NMSTART", "NMCHAR", "STRING1", "STRING2", "IDENT", "NAME", "HASH", "NUM", "STRING", "URL", "SPACE", "WHITESPACE", "COMMENT", "QUANTITY", "PUNC" ]
 
 # The comments below are mostly copied verbatim from the grammar.
 
@@ -47,6 +47,9 @@ IDENT = r'-?' + NMSTART + NMCHAR + '*'
 
 # name                    {nmchar}+
 NAME = NMCHAR + r'+'
+
+# hash
+HASH = r'#' + NAME
 
 # string1                 \"([^\n\r\f\\"]|\\{nl}|{escape})*\"  ; "string"
 STRING1 = r'"(?:[^\"\\]|\\.)*"'
