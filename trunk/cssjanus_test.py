@@ -503,5 +503,14 @@ class CSSJANUSUnitTest(unittest.TestCase):
     shouldbe = ['div\n{ /* @noflip */\ntext-align: left;\nfloat: right\n  }']
     self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
 
+    testcase = ['/* @noflip */div{float:left;text-align:left;}div{float:left}']
+    shouldbe = ['/* @noflip */div{float:left;text-align:left;}div{float:right}']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+
+    testcase = ['/* @noflip */','div{float:left;text-align:left;}a{foo:left}']
+    shouldbe = ['/* @noflip */', 'div{float:left;text-align:left;}a{foo:right}']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+
+
 if __name__ == '__main__':
   unittest.main()
