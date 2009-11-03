@@ -14,7 +14,7 @@ TEMPLATE_DEBUG = DEBUG
 
 LANGUAGE_CODE = 'en'
 TIME_ZONE = 'US/Pacific'
-#DATABASE_ENGINE = 'sqlite3' 
+#DATABASE_ENGINE = 'sqlite3'
 USE_I18N = True
 MIDDLEWARE_CLASSES = (
   'django.middleware.common.CommonMiddleware',
@@ -27,6 +27,7 @@ LANGUAGES = (
   ('zh_CN', gettext('Chinese')),
   ('en', gettext('English')),
   ('fr', gettext('French')),
+  ('he', gettext('Hebrew')),
   ('de', gettext('German')),
   ('ja', gettext('Japanese')),
   ('fa', gettext('Persian')),

@@ -9,7 +9,7 @@
 
 .g-doc-1024 {
   width: 1024px;
-  padding-top: 2em; 
+  padding-top: 2em;
 }
 .cssj-tpl-50-50 .cssj-unit {
   display: inline;
@@ -50,7 +50,7 @@ pre {
 }
 /* @noflip */
 pre {
-  text-align: left; 
+  text-align: left;
 }
 fieldset {
   margin: 1.6em 80px 0 0;
@@ -102,5 +102,9 @@ textarea {
   cursor: pointer;
 }
 #cssj-lang {
-  float: right; 
+  float: right;
+}
+#poweredby {
+  margin-top: 8em;
+  margin-left: 3em;
 }
