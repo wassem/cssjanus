@@ -411,8 +411,8 @@ class CSSJANUSUnitTest(unittest.TestCase):
     shouldbe = ['.test { background: 90% 20% } .test2 { background: 60% 30% }']
     self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
 
-    testcase = ['.test { background: 10px 20% } .test2 { background: 40% 30% }']
-    shouldbe = ['.test { background: 10px 20% } .test2 { background: 60% 30% }']
+    testcase = ['.test { background: 0% 20% } .test2 { background: 40% 30% }']
+    shouldbe = ['.test { background: 100% 20% } .test2 { background: 60% 30% }']
     self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
 
   def testDirectionalClassnames(self):
@@ -511,6 +511,31 @@ class CSSJANUSUnitTest(unittest.TestCase):
     shouldbe = ['/* @noflip */', 'div{float:left;text-align:left;}a{foo:right}']
     self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
 
+  def testBorderRadiusNotation(self):
+    testcase = ['border-radius: .25em 15px 0pt 0ex']
+    shouldbe = ['border-radius: 15px .25em 0ex 0pt']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+
+    testcase = ['border-radius: 10px 15px 0px']
+    shouldbe = ['border-radius: 15px 10px 15px 0px']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+
+    testcase = ['border-radius: 7px 8px']
+    shouldbe = ['border-radius: 8px 7px']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+
+    testcase = ['border-radius: 5px']
+    shouldbe = ['border-radius: 5px']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+
+  def testGradientNotation(self):
+    testcase = ['background-image: -moz-linear-gradient(#326cc1, #234e8c)']
+    shouldbe = ['background-image: -moz-linear-gradient(#326cc1, #234e8c)']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
+
+    testcase = ['background-image: -webkit-gradient(linear, 100% 0%, 0% 0%, from(#666666), to(#ffffff))']
+    shouldbe = ['background-image: -webkit-gradient(linear, 100% 0%, 0% 0%, from(#666666), to(#ffffff))']
+    self.assertEqual(shouldbe, cssjanus.ChangeLeftToRightToLeft(testcase))
 
 if __name__ == '__main__':
   unittest.main()
