@@ -14,7 +14,9 @@
    complicated bidirectional text issues.
 """
 
-__author__ = 'elsigh@google.com (Lindsey Simon)'
+__author__ = ['elsigh@google.com (Lindsey Simon)']
+__contributors__ = ['roozbeh@gmail.com (Roozbeh Pournader)',
+			  		'ebryon77@gmail.com (Bryon Engelhardt)']
 __version__ = '0.1'
 
 import logging
@@ -30,8 +32,10 @@ logging.getLogger().setLevel(logging.INFO)
 # Global for the command line flags.
 SWAP_LTR_RTL_IN_URL_DEFAULT = False
 SWAP_LEFT_RIGHT_IN_URL_DEFAULT = False
+IGNORE_BAD_BGP_DEFAULT = False
 FLAGS = {'swap_ltr_rtl_in_url': SWAP_LTR_RTL_IN_URL_DEFAULT,
-         'swap_left_right_in_url': SWAP_LEFT_RIGHT_IN_URL_DEFAULT}
+         'swap_left_right_in_url': SWAP_LEFT_RIGHT_IN_URL_DEFAULT,
+         'ignore_bad_bgp': IGNORE_BAD_BGP_DEFAULT}
 
 # Generic token delimiter character.
 TOKEN_DELIMITER = '~'
@@ -73,7 +77,9 @@ LOOKAHEAD_FOR_CLOSING_PAREN = r'(?=%s?%s\))' % (csslex.URL_CHARS,
 
 # Compile a regex to swap left and right values in 4 part notations.
 # We need to match negatives and decimal numeric values.
+# The case of border-radius is extra complex, so we handle it separately below.
 # ex. 'margin: .25em -2px 3px 0' becomes 'margin: .25em 0 3px -2px'.
+
 POSSIBLY_NEGATIVE_QUANTITY = r'((?:-?%s)|(?:inherit|auto))' % csslex.QUANTITY
 POSSIBLY_NEGATIVE_QUANTITY_SPACE = r'%s%s%s' % (POSSIBLY_NEGATIVE_QUANTITY,
                                                 csslex.SPACE,
@@ -95,6 +101,26 @@ FOUR_NOTATION_COLOR_RE = re.compile(r'(-color%s:%s)%s%s%s(%s)' %
                                      COLOR),
                                     re.I)
 
+# border-radius is very different from usual 4 part notation: ABCD should
+# change to BADC (while it would be ADCB in normal 4 part notation), ABC
+# should change to BABC, and AB should change to BA
+BORDER_RADIUS_RE = re.compile(r'((?:%s)?)border-radius(%s:%s)'
+                               '(?:%s)?(?:%s)?(?:%s)?(?:%s)'
+                               '(?:%s/%s(?:%s)?(?:%s)?(?:%s)?(?:%s))?' % (csslex.IDENT,
+                                                                          csslex.WHITESPACE,
+                                                                          csslex.WHITESPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY,
+                                                                          csslex.WHITESPACE,
+                                                                          csslex.WHITESPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY_SPACE,
+                                                                          POSSIBLY_NEGATIVE_QUANTITY),
+                              re.I)
+
 # Compile the cursor resize regexes
 CURSOR_EAST_RE = re.compile(LOOKBEHIND_NOT_LETTER + '([ns]?)e-resize')
 CURSOR_WEST_RE = re.compile(LOOKBEHIND_NOT_LETTER + '([ns]?)w-resize')
@@ -106,17 +132,47 @@ CURSOR_WEST_RE = re.compile(LOOKBEHIND_NOT_LETTER + '([ns]?)w-resize')
 # one quantity.
 BG_HORIZONTAL_PERCENTAGE_RE = re.compile(r'background(-position)?(%s:%s)'
                                          '([^%%]*?)(%s)%%'
-                                         '(%s(?:%s|%s))' % (csslex.WHITESPACE,
-                                                            csslex.WHITESPACE,
-                                                            csslex.NUM,
-                                                            csslex.WHITESPACE,
-                                                            csslex.QUANTITY,
-                                                            csslex.IDENT))
+                                         '(%s(?:%s|top|center|bottom))' % (csslex.WHITESPACE,
+                                                                           csslex.WHITESPACE,
+                                                                           csslex.NUM,
+                                                                           csslex.WHITESPACE,
+                                                                           POSSIBLY_NEGATIVE_QUANTITY))
 
 BG_HORIZONTAL_PERCENTAGE_X_RE = re.compile(r'background-position-x(%s:%s)'
                                            '(%s)%%' % (csslex.WHITESPACE,
                                                        csslex.WHITESPACE,
                                                        csslex.NUM))
+
+# Non-percentage units used for CSS lengths
+LENGTH_UNIT = r'(?:em|ex|px|cm|mm|in|pt|pc)'
+# To make sure the lone 0 is not just starting a number (like "02") or a percentage like ("0 %")
+LOOKAHEAD_END_OF_ZERO = '(?![0-9]|%s%%)' % csslex.WHITESPACE
+# A length with a unit specified. Matches "0" too, as it's a length, not a percentage.
+LENGTH = '(?:-?%s(?:%s%s)|0+%s)' % (csslex.NUM,
+                                    csslex.WHITESPACE,
+                                    LENGTH_UNIT,
+                                    LOOKAHEAD_END_OF_ZERO)
+
+# Zero length. Used in the replacement functions.
+ZERO_LENGTH = re.compile(r'(?:-?0+(?:%s%s)|0+%s)$' % (csslex.WHITESPACE,
+                                                      LENGTH_UNIT,
+                                                      LOOKAHEAD_END_OF_ZERO))
+
+# Matches background, background-position, and background-position-x
+# properties when using a CSS length for its horizontal positioning.
+BG_HORIZONTAL_LENGTH_RE = re.compile(r'background(-position)?(%s:%s)'
+                                      '((?:.+?%s+)??)(%s)'
+                                      '((?:%s+)(?:%s|top|center|bottom))'% (csslex.WHITESPACE,
+                                                                            csslex.WHITESPACE,
+                                                                            csslex.SPACE,
+                                                                            LENGTH,
+                                                                            csslex.SPACE,
+                                                                            POSSIBLY_NEGATIVE_QUANTITY))
+
+BG_HORIZONTAL_LENGTH_X_RE = re.compile(r'background-position-x(%s:%s)'
+                                        '(%s)' % (csslex.WHITESPACE,
+                                                  csslex.WHITESPACE,
+                                                  LENGTH))
 
 # Matches the opening of a body selector.
 BODY_SELECTOR = r'body%s{%s' % (csslex.WHITESPACE, csslex.WHITESPACE)
@@ -149,15 +205,15 @@ DIRECTION_RTL_RE = re.compile(r'%s(rtl)' % DIRECTION_RE)
 # two regexes are for that purpose. We have alternate IN_URL versions of the
 # regexes compiled in case the user passes the flag that they do
 # actually want to have left and right swapped inside of background:urls.
-LEFT_RE = re.compile('%s(%s)%s%s' % (LOOKBEHIND_NOT_LETTER,
-                                     LEFT,
-                                     LOOKAHEAD_NOT_CLOSING_PAREN,
-                                     LOOKAHEAD_NOT_OPEN_BRACE),
+LEFT_RE = re.compile('%s((?:top|bottom)?)(%s)%s%s' % (LOOKBEHIND_NOT_LETTER,
+                                                      LEFT,
+                                                      LOOKAHEAD_NOT_CLOSING_PAREN,
+                                                      LOOKAHEAD_NOT_OPEN_BRACE),
                      re.I)
-RIGHT_RE = re.compile('%s(%s)%s%s' % (LOOKBEHIND_NOT_LETTER,
-                                      RIGHT,
-                                      LOOKAHEAD_NOT_CLOSING_PAREN,
-                                      LOOKAHEAD_NOT_OPEN_BRACE),
+RIGHT_RE = re.compile('%s((?:top|bottom)?)(%s)%s%s' % (LOOKBEHIND_NOT_LETTER,
+                                                       RIGHT,
+                                                       LOOKAHEAD_NOT_CLOSING_PAREN,
+                                                       LOOKAHEAD_NOT_OPEN_BRACE),
                       re.I)
 LEFT_IN_URL_RE = re.compile('%s(%s)%s' % (LOOKBEHIND_NOT_LETTER,
                                           LEFT,
@@ -200,6 +256,45 @@ NOFLIP_SINGLE_RE = re.compile(r'(%s%s[^;}]+;?)' % (NOFLIP_ANNOTATION,
 NOFLIP_CLASS_RE = re.compile(r'(%s%s})' % (NOFLIP_ANNOTATION,
                                            CHARS_WITHIN_SELECTOR),
                              re.I)
+
+# border-radis properties and their values
+BORDER_RADIUS_TOKENIZER_RE = re.compile(r'((?:%s)?border-radius%s:[^;}]+;?)' % (csslex.IDENT,
+                                                                                csslex.WHITESPACE),
+                                        re.I)
+
+# CSS gradients can't be expressed in normal regular expressions, since they
+# can contain nested parentheses. So we emulate a re.sub-like function here.
+
+class MatchLike:
+  def __init__(self, match):
+    self.match = match
+  
+  def group(self, group_number):
+    return self.match
+
+
+GRADIENT_RE = re.compile(r'%s[\.-]gradient%s\(' % (csslex.IDENT, csslex.WHITESPACE), re.I)
+
+class GradientMatcher:
+  def sub(self, match_function, input_string):
+    output = []
+    m = GRADIENT_RE.search(input_string)
+    while m:
+      paren_count = 1
+      index = m.end(0)
+      while paren_count > 0:
+        if input_string[index] == '(':
+          paren_count += 1
+        elif input_string[index] == ')':
+          paren_count -= 1
+        index += 1
+      # Here, index would point to the character after the matching closing parenthesis
+      replacement = match_function(MatchLike(input_string[m.start(0):index]))
+
+      output.append(input_string[:m.start(0)] + replacement)
+      input_string = input_string[index:]
+      m = GRADIENT_RE.search(input_string)
+    return ''.join(output)+input_string
 
 
 class Tokenizer:
@@ -300,8 +395,8 @@ def FixLeftAndRight(line):
     line will now be 'padding-right: 2px; margin-left: 1px;'.
   """
 
-  line = LEFT_RE.sub(TMP_TOKEN, line)
-  line = RIGHT_RE.sub(LEFT, line)
+  line = LEFT_RE.sub("\\1" + TMP_TOKEN, line)
+  line = RIGHT_RE.sub("\\1" + LEFT, line)
   line = line.replace(TMP_TOKEN, RIGHT)
   logging.debug('FixLeftAndRight returns: %s' % line)
   return line
@@ -364,6 +459,22 @@ def FixCursorProperties(line):
   return line
 
 
+def FixBorderRadius(line):
+  """Fixes border-radius and its browser-specific variants.
+
+  Args:
+    line: A string to fix border-radius in.
+
+  Returns:
+    line reformatted with the border-radius values rearranged. For example:
+    line = FixBorderRadius('border-radius: 1px 2px 3px 4px / 5px 6px 7px')
+    line will now be 'border-radius: 2px 1px 4px 3px / 6px 5px 6px 7px'.
+  """
+  line = BORDER_RADIUS_RE.sub(ReorderBorderRadius, line)
+  logging.debug('FixBorderRadius returns: %s' % line)
+  return line
+
+
 def FixFourPartNotation(line):
   """Fixes the second and fourth positions in 4 part CSS notation.
 
@@ -382,20 +493,63 @@ def FixFourPartNotation(line):
 
 
 def FixBackgroundPosition(line):
-  """Fixes horizontal background percentage values in line.
+  """Fixes horizontal background values in line.
 
   Args:
     line: A string to fix horizontal background position values in.
 
   Returns:
-    line reformatted with the 4 part notations swapped.
+    line reformatted with the horizontal background values replaced, if possible.
+    Otherwise, an exception would be raised.
   """
   line = BG_HORIZONTAL_PERCENTAGE_RE.sub(CalculateNewBackgroundPosition, line)
   line = BG_HORIZONTAL_PERCENTAGE_X_RE.sub(CalculateNewBackgroundPositionX,
                                            line)
+  line = BG_HORIZONTAL_LENGTH_RE.sub(CalculateNewBackgroundLengthPosition, line)
+  line = BG_HORIZONTAL_LENGTH_X_RE.sub(CalculateNewBackgroundLengthPositionX,
+                                       line)
   logging.debug('FixBackgroundPosition returns: %s' % line)
   return line
 
+
+def ReorderBorderRadiusPart(part):
+  """Takes a list of zero to four border radius parts and returns a string of them
+  reordered for bidi mirroring.
+  """
+
+  # Remove any piece which may be 'None'
+  part = [piece for piece in part if piece is not None]
+  
+  if len(part) == 4:
+    return '%s %s %s %s' % (part[1], part[0], part[3], part[2])
+  elif len(part) == 3:
+    return '%s %s %s %s' % (part[1], part[0], part[1], part[2])
+  elif len(part) == 2:
+    return '%s %s' % (part[1], part[0])
+  elif len(part) == 1:
+    return part[0]
+  elif len(part) == 0:
+    return ''
+  else:
+    raise Error("This can't happen!")
+    
+
+def ReorderBorderRadius(m):
+  """Receives a match object for a border-radius element and reorders it
+  pieces.
+  """
+  first_group = ReorderBorderRadiusPart(m.groups()[2:6])
+  second_group = ReorderBorderRadiusPart(m.groups()[6:])
+  if second_group == '':
+    return '%sborder-radius%s%s' % (m.group(1),
+                                    m.group(2),
+                                    first_group)
+  else:
+    return '%sborder-radius%s%s / %s' % (m.group(1),
+                                         m.group(2),
+                                         first_group,
+                                         second_group)
+                      
 
 def CalculateNewBackgroundPosition(m):
   """Fixes horizontal background-position percentages.
@@ -447,6 +601,80 @@ def CalculateNewBackgroundPositionX(m):
 
   return 'background-position-x%s%s%%' % (m.group(1), new_x)
 
+BACKGROUND_POSITION_ERROR_MESSAGE = 'Unmirrorable horizonal value %s: %s\n'
+
+# An exception created for background-position horizontal values set to
+# non-zero lengths which makes them unmirrorable.
+class BackgroundPositionError(Exception):
+  def __init__(self, bad_length, whole_value):
+    self.bad_length = bad_length
+    self.whole_value = whole_value
+  
+  def __str__(self):
+    return BACKGROUND_POSITION_ERROR_MESSAGE % (repr(self.bad_length), self.whole_value)
+
+def WarnForBackgroundPosition(bad_length, whole_value):
+  if FLAGS['ignore_bad_bgp']:
+    sys.stderr.write(BACKGROUND_POSITION_ERROR_MESSAGE % (repr(bad_length), whole_value))
+  else:
+    raise BackgroundPositionError(bad_length, whole_value)
+
+def CalculateNewBackgroundLengthPosition(m):
+  """Fixes horizontal background-position lengths.
+
+  This function should be used as an argument to re.sub since it needs to
+  perform replacement specific calculations.
+
+  Args:
+    m: A match object.
+
+  Returns:
+    A string with the horizontal background position set to 100%, if zero. 
+    Otherwise, an exception will be raised.
+    BG_HORIZONTAL_LENGTH_RE.sub(CalculateNewBackgroundLengthPosition,
+                                'background-position: 0px 10px')
+    will return 'background-position: 100% 10px'.
+  """
+
+  # raise an exception if the length is not zero-valued
+  if not ZERO_LENGTH.match(m.group(4)):
+    WarnForBackgroundPosition(m.group(4), m.group(0))
+    return m.group(0)
+
+  # Since m.group(1) may very well be None type and we need a string..
+  if m.group(1):
+    position_string = m.group(1)
+  else:
+    position_string = ''
+
+  return 'background%s%s%s100%%%s' % (position_string, m.group(2), m.group(3),
+                                      m.group(5))
+
+
+def CalculateNewBackgroundLengthPositionX(m):
+  """Fixes background-position-x lengths.
+
+  This function should be used as an argument to re.sub since it needs to
+  perform replacement specific calculations.
+
+  Args:
+    m: A match object.
+
+  Returns:
+    A string with the background-position-x set to 100%, if zero.
+    Otherwiser, an exception will be raised.
+    BG_HORIZONTAL_LENGTH_X_RE.sub(CalculateNewBackgroundLengthPositionX,
+                                  'background-position-x: 0')
+    will return 'background-position-x: 100%'.
+  """
+
+  # raise an exception if the length is not zero-valued
+  if not ZERO_LENGTH.match(m.group(2)):
+    WarnForBackgroundPosition(m.group(2), m.group(0))
+    return m.group(0)
+
+  return 'background-position-x%s100%%' % m.group(1)
+
 
 def ChangeLeftToRightToLeft(lines,
                             swap_ltr_rtl_in_url=None,
@@ -489,6 +717,10 @@ def ChangeLeftToRightToLeft(lines,
   comment_tokenizer = Tokenizer(COMMENT_RE, 'C')
   line = comment_tokenizer.Tokenize(line)
 
+  # Tokenize gradients since we don't want to mirror the values inside
+  gradient_tokenizer = Tokenizer(GradientMatcher(), 'GRADIENT')
+  line = gradient_tokenizer.Tokenize(line)
+
   # Here starteth the various left/right orientation fixes.
   line = FixBodyDirectionLtrAndRtl(line)
 
@@ -500,8 +732,17 @@ def ChangeLeftToRightToLeft(lines,
 
   line = FixLeftAndRight(line)
   line = FixCursorProperties(line)
+
+  line = FixBorderRadius(line)
+  # Since FourPartNotation conflicts with BorderRadius, we tokenize border-radius properties here.
+  border_radius_tokenizer = Tokenizer(BORDER_RADIUS_TOKENIZER_RE, 'BORDER_RADIUS')
+  line = border_radius_tokenizer.Tokenize(line)
   line = FixFourPartNotation(line)
+  line = border_radius_tokenizer.DeTokenize(line)
+  
   line = FixBackgroundPosition(line)
+
+  line = gradient_tokenizer.DeTokenize(line)
 
   # DeTokenize the single line noflips.
   line = noflip_single_tokenizer.DeTokenize(line)
@@ -526,7 +767,9 @@ def usage():
   print '  --swap_left_right_in_url: Fixes "left"/"right" string within urls.'
   print '  Ex: ./cssjanus.py --swap_left_right_in_url < file.css > file_rtl.css'
   print '  --swap_ltr_rtl_in_url: Fixes "ltr"/"rtl" string within urls.'
-  print '  Ex: ./cssjanus --swap_ltr_rtl_in_url < file.css > file_rtl.css'
+  print '  Ex: ./cssjanus.py --swap_ltr_rtl_in_url < file.css > file_rtl.css'
+  print '  --ignore_bad_bgp: Ignores unmirrorable background-position values.'
+  print '  Ex: ./cssjanus.py --ignore_bad_bgp < file.css > file_rtl.css'
 
 def setflags(opts):
   """Parse the passed in command line arguments and set the FLAGS global.
@@ -545,10 +788,12 @@ def setflags(opts):
       sys.exit()
     elif opt in ("-d", "--debug"):
       logging.getLogger().setLevel(logging.DEBUG)
-    elif opt == 'swap_ltr_rtl_in_url':
-      FLAGS['swap_ltr_rtl_in_url'] = arg
-    elif opt == 'swap_left_right_in_url':
-      FLAGS['swap_left_right_in_url'] = arg
+    elif opt == '--swap_ltr_rtl_in_url':
+      FLAGS['swap_ltr_rtl_in_url'] = True
+    elif opt == '--swap_left_right_in_url':
+      FLAGS['swap_left_right_in_url'] = True
+    elif opt == '--ignore_bad_bgp':
+      FLAGS['ignore_bad_bgp'] = True
 
 
 def main(argv):
@@ -557,8 +802,9 @@ def main(argv):
   # Define the flags.
   try:
     opts, args = getopt.getopt(argv, 'hd', ['help', 'debug',
-                                            'swap_left_right_in_url=',
-                                            'swap_ltr_rtl_in_url='])
+                                            'swap_left_right_in_url',
+                                            'swap_ltr_rtl_in_url',
+                                            'ignore_bad_bgp'])
   except getopt.GetoptError:
     usage()
     sys.exit(2)
